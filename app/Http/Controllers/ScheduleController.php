@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Schedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ScheduleController extends Controller
 {
@@ -12,7 +13,8 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        //
+        $schedule = Schedule::all();
+        return response()->json($schedule, 200);
     }
 
 
@@ -21,16 +23,29 @@ class ScheduleController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name'        => 'required|string',
             'description' => 'nullable|string',
             'date'        => 'required|date',
             'time'        => 'required|date_format:H:i:s',
             'category'    => 'required|string',
         ]);
-
-        $schedule = Schedule::create($request->only('name', 'description', 'date', 'time', 'category'));
-
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+    
+        $schedule = Schedule::create([
+            'name'        => $request->name,
+            'description' => $request->description,
+            'date'        => $request->date,
+            'time'        => $request->time,
+            'category'    => $request->category,
+        ]);
+    
         return response()->json($schedule, 201);
     }
 
@@ -39,7 +54,8 @@ class ScheduleController extends Controller
      */
     public function show($id)
     {
-        //
+        $schedule = Schedule::find($id);
+        return response()->json($schedule, 200);
     }
 
     /**
