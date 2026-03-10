@@ -48,6 +48,26 @@ class ScheduleController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $schedule = Schedule::find($id);
+
+        if(!$schedule){
+            return response()->json(['message' => 'Data Tidak Ditemukan'],404);
+        }
+
+        $validated = $request->validate([
+            'name'        => 'required|string',
+            'description' => 'nullable|string',
+            'date'        => 'required|date',
+            'time'        => 'required|date_format:H:i:s',
+            'category'    => 'required|string',
+        ]);
+
+        $schedule->update($validated);
+
+        return response()->json([
+            'message' => 'Schedule updated succesfully',
+            'data' => $schedule
+        ], 200);
     }
 
     /**
