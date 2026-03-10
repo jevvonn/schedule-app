@@ -21,7 +21,17 @@ class ScheduleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name'        => 'required|string',
+            'description' => 'nullable|string',
+            'date'        => 'required|date',
+            'time'        => 'required|date_format:H:i:s',
+            'category'    => 'required|string',
+        ]);
+
+        $schedule = Schedule::create($request->only('name', 'description', 'date', 'time', 'category'));
+
+        return response()->json($schedule, 201);
     }
 
     /**
